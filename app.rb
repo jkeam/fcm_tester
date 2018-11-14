@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fcm'
 require 'dotenv'
 Dotenv.load
@@ -8,8 +10,8 @@ end
 
 def load_env_vars(env)
   # load necessary env variables
-  fcm_key = env['FCM_KEY'].freeze
-  device_token = env['DEVICE_TOKEN'].freeze
+  fcm_key = env['FCM_KEY']
+  device_token = env['DEVICE_TOKEN']
 
   missing_key = blank?(fcm_key)
   missing_device_token = blank?(device_token)
@@ -32,15 +34,14 @@ def load_env_vars(env)
 end
 
 def send_to_android(fcm, opts={title: nil, body: nil, data: nil, token: nil})
-  return {error: true, reason: 'Missing token'} if blank?(opts[:token])
-  options = {
+  return { error: true, reason: 'Missing token' } if blank?(opts[:token])
+  fcm.send_notification([opts[:token]], {
     notification: {
       title: opts[:title] || '',
       text: opts[:body] || ''
     },
     data: opts[:data] || {}
-  }
-  fcm.send_notification [opts[:token]], options
+  })
 end
 
 # main
